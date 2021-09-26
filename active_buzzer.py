@@ -39,11 +39,15 @@ GPIO.setup(signalPIN,GPIO.OUT)
 # this row makes buzzer work for 1 second, then
 # cleanup will free PINS and exit will terminate code execution
 
-for x in range(10) :
-	GPIO.output(signalPIN,1)
-	time.sleep(1)
-	GPIO.output(signalPIN,0)
-	time.sleep(0.5)
+GPIO.output(signalPIN, 1)
+GPIO.output(signalPIN, 0)
+
+
+# for x in range(10) :
+# 	GPIO.output(signalPIN,1)
+# 	time.sleep(1)
+# 	GPIO.output(signalPIN,0)
+# 	time.sleep(0.5)
 
 time.sleep(1)
 GPIO.cleanup()
