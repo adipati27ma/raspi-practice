@@ -1,9 +1,9 @@
 import BlynkLib
 from gps import *
 # from gpiozero import LED
-from datetime import datetime
-from time import sleep
+import time
 # import RPi.GPIO as GPIO
+import threading
 
 # Initialize Blynk & State for GPS
 blynk = BlynkLib.Blynk('1EWSq_x7ATOX7ejvCMx5OwNVF9RtOFIe')
@@ -29,18 +29,31 @@ def getPositionData(gps):
     return positionData
 
 
+def sendPositionData(gpsd):
+  global sendingData
+  
+  start = time.perf_counter() # for response time debugging
+  for x in range(10) :
+    if x == 4: finish = time.perf_counter() # for response time debugging
+    
+    dataGps = getPositionData(gpsd)
+    print(dataGps)
+    if dataGps :
+      blynk.virtual_write(5, 1, dataGps[0], dataGps[1], "value")
+      blynk.virtual_write(2, str(dataGps))
+    time.sleep(0.2)
+  
+  blynk.virtual_write(1, 0)
+  sendingData = False
+  print("Data transfer stopped.")
+  print(f'Finished in {round(finish-start, 5)} second(s)') # for response time debugging
 
-# Register Virtual Pin
-# @blynk.VIRTUAL_READ(2)
-# def my_read_handler():
-#   currentTime = datetime.now()
-#   blynk.virtual_write(2, currentTime.strftime("%d/%m/%Y %H:%M:%S"))
+
 
 @blynk.VIRTUAL_WRITE(1)
 def my_write_handler(value) :
   global sendingData
   intValue = int(value[0])
-  print(intValue)
   if sendingData :
     blynk.virtual_write(1, 1)
     return
@@ -50,28 +63,9 @@ def my_write_handler(value) :
   print("Sending data...")
   sendingData = True
 
-  for x in range(10) :
-    dataGps = getPositionData(gpsd)
-    print(dataGps)
-    if dataGps :
-      blynk.virtual_write(5, 1, dataGps[0], dataGps[1], "value")
-      blynk.virtual_write(2, str(dataGps))
-    time.sleep(0.5)
-  
-  blynk.virtual_write(1, 0)
-  sendingData = False
-  print("Data transfer stopped.")
+  sendThread = threading.Thread(target=sendPositionData, args=[gpsd])
+  sendThread.start()
 
-  # while running:
-  #   dataGps = getPositionData(gpsd)
-  #   blynk.virtual_write(5, 1, dataGps[0], dataGps[1], "value")
-  #   # print(dataGps)
-  #   time.sleep(1.0)
-	
-  #   if int(value) == 1:
-  #     pass
-  #   else:
-  #     running = False
 
 print("started!")
 while True:
