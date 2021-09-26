@@ -1,0 +1,2 @@
+tekanan buzzer :
+2500 & 4000
