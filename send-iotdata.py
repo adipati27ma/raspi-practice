@@ -8,7 +8,7 @@ import threading
 
 # Initialize Blynk, Adafruit IO, & State for GPS
 blynk = BlynkLib.Blynk('1EWSq_x7ATOX7ejvCMx5OwNVF9RtOFIe')
-aio = Client('adipati27ma', 'aio_dyuM64uclXvktMwEN6nnJu5GfzI8')
+aio = Client('adipati27ma', 'aio_CDYp78n5HRoIr1QwMk8K4RLduINS')
 sendingData = False
 
 # Initialize GPIO
@@ -30,7 +30,16 @@ def getPositionData(gps):
 
     return positionData
 
+# Function sendToBlynk & sendToAdafruit
+def sendToBlynk(dataGps):
+  blynk.virtual_write(5, 1, dataGps[0], dataGps[1], "value")
+  blynk.virtual_write(2, str(dataGps))
 
+def sendToAdafruit(dataLevel, metaData):
+  aio.send("sleepy-driver-data-history", dataLevel, metaData)
+
+
+# Function send Pos Data
 def sendPositionData(gpsd):
   global sendingData
 
@@ -49,9 +58,11 @@ def sendPositionData(gpsd):
         'ele': 0,
         'created_at': None,
       }
-      blynk.virtual_write(5, 1, dataGps[0], dataGps[1], "value")
-      blynk.virtual_write(2, str(dataGps))
-      aio.send("sleepy-driver-data-history", dataLevel, metaData)
+      
+      sendBlynk = threading.Thread(target=sendToBlynk, args=[dataGps])
+      sendAdafruit = threading.Thread(target=sendToAdafruit, args=[dataLevel, metaData])
+      sendAdafruit.start()
+      sendBlynk.start()
     time.sleep(0.2)
   
   blynk.virtual_write(1, 0)
