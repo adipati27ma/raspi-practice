@@ -1,6 +1,7 @@
 import BlynkLib
 from Adafruit_IO import *
 from gps import *
+from subprocess import check_output
 # from gpiozero import LED
 import time
 # import RPi.GPIO as GPIO
@@ -95,6 +96,11 @@ def my_write_handler(value) :
   sendThread.start()
 
 
-print("started!")
-while True:
+wifi_ip = check_output(['hostname', '-I'])
+if (wifi_ip is not None):
+  print("Connected")
+  print("started!")
+  while True:
     blynk.run()
+else:
+  print("Not Connected")

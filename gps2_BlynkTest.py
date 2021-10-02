@@ -1,4 +1,5 @@
 import BlynkLib
+from subprocess import check_output
 from gps import *
 # from gpiozero import LED
 import time
@@ -67,6 +68,12 @@ def my_write_handler(value) :
   sendThread.start()
 
 
-print("started!")
-while True:
+
+wifi_ip = check_output(['hostname', '-I'])
+if (wifi_ip is not None):
+  print("Connected")
+  print("started!")
+  while True:
     blynk.run()
+else:
+  print("Not Connected")
