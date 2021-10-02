@@ -1,7 +1,7 @@
 from Adafruit_IO import *
 
 
-aio = Client('adipati27ma', 'aio_dyuM64uclXvktMwEN6nnJu5GfzI8')
+aio = Client('adipati27ma', 'aio_VWIo953Vo35Ko5ktrlCPOpDaIP8x')
 metadata = {
   'lat': -6.947038,
   'lon': 107.661577,
