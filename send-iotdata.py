@@ -8,8 +8,9 @@ import threading
 
 # Initialize Blynk, Adafruit IO, & State for GPS
 blynk = BlynkLib.Blynk('1EWSq_x7ATOX7ejvCMx5OwNVF9RtOFIe')
-aio = Client('adipati27ma', 'aio_VWIo953Vo35Ko5ktrlCPOpDaIP8x')
+aio = Client('adipati27ma', 'aio_IdPq53GcuVlGKQZhSsqUfZzMCk3E')
 sendingData = False
+sentAdafruit = False
 
 # Initialize GPIO
 # led = LED(17)
@@ -42,12 +43,12 @@ def sendToAdafruit(dataLevel, metaData):
 # Function send Pos Data
 def sendPositionData(gpsd):
   global sendingData
-
+  global sentAdafruit
   dataLevel = 1
   
   start = time.perf_counter() # for response time debugging
   for x in range(10) :
-    if x == 4: finish = time.perf_counter() # for response time debugging
+    if x == 5: finish = time.perf_counter() # for response time debugging
     
     dataGps = getPositionData(gpsd)
     print(dataGps)
@@ -60,13 +61,16 @@ def sendPositionData(gpsd):
       }
       
       sendBlynk = threading.Thread(target=sendToBlynk, args=[dataGps])
-      sendAdafruit = threading.Thread(target=sendToAdafruit, args=[dataLevel, metaData])
-      sendAdafruit.start()
       sendBlynk.start()
+      if (sentAdafruit == False):
+        sendAdafruit = threading.Thread(target=sendToAdafruit, args=[dataLevel, metaData])
+        sendAdafruit.start()
+        sentAdafruit = True
     time.sleep(0.2)
   
   blynk.virtual_write(1, 0)
   sendingData = False
+  sentAdafruit = False
   finishAll = time.perf_counter()
   print("Data transfer stopped.")
   print(f'Finished in {round(finish-start, 5)} second(s)') # for response time debugging
