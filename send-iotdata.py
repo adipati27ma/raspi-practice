@@ -9,7 +9,7 @@ import threading
 
 # Initialize Blynk, Adafruit IO, & State for GPS
 blynk = BlynkLib.Blynk('1EWSq_x7ATOX7ejvCMx5OwNVF9RtOFIe')
-aio = Client('adipati27ma', 'aio_IdPq53GcuVlGKQZhSsqUfZzMCk3E')
+aio = Client('adipati27ma', 'aio_TdlI51n0cWNXf86l7gioLg9iz2T1')
 sendingData = False
 sentAdafruit = False
 
