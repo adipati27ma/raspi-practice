@@ -78,7 +78,7 @@ def sendPositionData(gpsd):
   print(f'Finished ALL in {round(finishAll-start, 5)} second(s)') # for response time debugging
 
 
-
+# Input from Blynk (will send data gps to Blynk)
 @blynk.VIRTUAL_WRITE(1)
 def my_write_handler(value) :
   global sendingData
